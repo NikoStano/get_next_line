@@ -6,7 +6,7 @@
 /*   By: nistanoj <nistanoj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 17:33:41 by nistanoj          #+#    #+#             */
-/*   Updated: 2025/05/19 01:29:29 by nistanoj         ###   ########.fr       */
+/*   Updated: 2025/05/19 07:20:04 by nistanoj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,26 +14,20 @@
 
 static char	*read_line(int fd, char *buffer)
 {
-	char	*file;
+	char	file[BUFFER_SIZE + 1];
 	ssize_t	rd;
 
-	file = malloc(BUFFER_SIZE + 1);
-	if (!file)
-		return (NULL);
 	rd = 1;
 	while (rd > 0 && !ft_strchr(buffer, '\n'))
 	{
 		rd = read(fd, file, BUFFER_SIZE);
 		if (rd == -1)
-		{
-			free(file);
-			free(buffer);
-			return (NULL);
-		}
+			return (free(buffer), NULL);
 		file[rd] = '\0';
 		buffer = ft_strjoin(buffer, file);
+		if (!buffer)
+			buffer = ft_strdup("");
 	}
-	free(file);
 	return (buffer);
 }
 
@@ -66,13 +60,9 @@ static char	*next_line(char *buffer)
 	if (buffer[i] == '\n')
 		i++;
 	if (buffer[i] == '\0')
-	{
-		free(buffer);
-		return (NULL);
-	}
+		return (free(buffer), NULL);
 	next = ft_substr(buffer, i, ft_strlen(buffer) - i);
-	free(buffer);
-	return (next);
+	return (free(buffer), next);
 }
 
 char	*get_next_line(int fd)
@@ -86,6 +76,8 @@ char	*get_next_line(int fd)
 	if (!buffer)
 		return (NULL);
 	line = find_line(buffer);
+	if (!line)
+		return (free(buffer), buffer = NULL, NULL);
 	buffer = next_line(buffer);
 	return (line);
 }
