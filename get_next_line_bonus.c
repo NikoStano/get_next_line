@@ -6,7 +6,7 @@
 /*   By: nistanoj <nistanoj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:05:14 by nistanoj          #+#    #+#             */
-/*   Updated: 2025/04/14 02:18:37 by nistanoj         ###   ########.fr       */
+/*   Updated: 2025/05/19 01:30:37 by nistanoj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,30 +14,26 @@
 
 static char	*read_line(int fd, char *buffer)
 {
-	char	*buff;
+	char	*file;
 	ssize_t	rd;
 
-	buff = malloc(BUFFER_SIZE + 1);
-	if (!buff)
+	file = malloc(BUFFER_SIZE + 1);
+	if (!file)
 		return (NULL);
 	rd = 1;
 	while (rd > 0 && !ft_strchr(buffer, '\n'))
 	{
-		rd = read(fd, buff, BUFFER_SIZE);
-		if (rd < 0)
+		rd = read(fd, file, BUFFER_SIZE);
+		if (rd == -1)
 		{
-			free(buff);
+			free(file);
 			free(buffer);
 			return (NULL);
 		}
-		if (rd == 0)
-			break ;
-		buff[rd] = '\0';
-		buffer = ft_strjoin(buffer, buff);
+		file[rd] = '\0';
+		buffer = ft_strjoin(buffer, file);
 	}
-	free(buff);
-	if (!buffer || ft_strlen(buffer) == 0)
-		return (NULL);
+	free(file);
 	return (buffer);
 }
 
@@ -57,21 +53,26 @@ static char	*find_line(char *buffer)
 	return (line);
 }
 
-static char	*new_line(char *buffer)
+static char	*next_line(char *buffer)
 {
-	char	*nbuffer;
+	char	*next;
 	int		i;
 
+	if (!buffer)
+		return (NULL);
 	i = 0;
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
-	if (!buffer[i])
-		return (free(buffer), NULL);
-	i++;
+	if (buffer[i] == '\n')
+		i++;
 	if (buffer[i] == '\0')
-		return (free(buffer), NULL);
-	nbuffer = ft_substr(buffer, i, ft_strlen(buffer) - i);
-	return (free(buffer), nbuffer);
+	{
+		free(buffer);
+		return (NULL);
+	}
+	next = ft_substr(buffer, i, ft_strlen(buffer) - i);
+	free(buffer);
+	return (next);
 }
 
 char	*get_next_line(int fd)
@@ -85,6 +86,6 @@ char	*get_next_line(int fd)
 	if (!buffer[fd])
 		return (NULL);
 	line = find_line(buffer[fd]);
-	buffer[fd] = new_line(buffer[fd]);
+	buffer[fd] = next_line(buffer[fd]);
 	return (line);
 }

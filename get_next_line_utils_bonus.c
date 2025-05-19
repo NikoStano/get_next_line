@@ -6,7 +6,7 @@
 /*   By: nistanoj <nistanoj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:17:34 by nistanoj          #+#    #+#             */
-/*   Updated: 2025/04/14 01:36:57 by nistanoj         ###   ########.fr       */
+/*   Updated: 2025/05/19 01:24:12 by nistanoj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,10 @@ char	*ft_strjoin(char *s1, char *s2)
 
 	join = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
 	if (!join)
-		return (free(s1), NULL);
+	{
+		free(s1);
+		return (NULL);
+	}
 	i = 0;
 	while (s1 && s1[i])
 	{
